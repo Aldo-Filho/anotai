@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+  categories Category[]
+  transactions Transaction[]
+  bills Bill[]
+}
+model Category {
+  id String @id @default(uuid())
+  name String
+  normalizedName String
+  type TransactionType
+  userId String?
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  bills Bill[]
+  @@unique([userId, type, normalizedName])
+}
+model Transaction {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description String
+  amountCents Int
+  type TransactionType
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  date DateTime @db.Date
+  billId String? @unique
+  bill Bill? @relation(fields: [billId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  @@index([userId, date])
+}
+model Bill {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description String
+  amountCents Int
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  dueDate DateTime @db.Date
+  payment Transaction?
+  createdAt DateTime @default(now())
+  @@index([userId, dueDate])
+}

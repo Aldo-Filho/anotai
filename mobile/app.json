@@ -1,0 +1,1 @@
+{"expo":{"name":"Anotaí","slug":"anotai","scheme":"anotai","version":"1.0.0","userInterfaceStyle":"automatic","web":{"bundler":"metro","output":"single","favicon":"../assets/logo.png"},"plugins":["expo-router"],"experiments":{"typedRoutes":false}}}
